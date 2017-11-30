@@ -1,0 +1,149 @@
+<html>
+
+    <head>
+	<title>http2.lol - Fingerprint your HTTP/2 Stack</title>
+	<script
+	    src="https://code.jquery.com/jquery-3.2.1.min.js"
+	    integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+	    crossorigin="anonymous"></script>
+
+	<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Quicksand" />
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"> </script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.3.3/backbone-min.js" ></script>
+
+	<script src="https://warfares.github.io/pretty-json/pretty-json-min.js"></script>
+
+	<style>
+	 /* common */
+	 .mark-water{
+	     color:#bbb;
+	 }
+	 /* eof common */
+
+	 /* node */
+	 .node-content-wrapper{
+	     font-family: 'Quicksand', sans-serif;
+	     background-color:#fff;
+	 }
+	 .node-content-wrapper ul{
+	     border-left:1px dotted #ccc;
+	     list-style:none;
+	     padding-left:25px;
+	     margin:0px;
+	 }
+	 .node-content-wrapper ul li{
+	     list-style:none;
+	     border-bottom:0; 
+	     padding-bottom:0
+	 }
+	 .node-hgl-path{
+	     background-color:#fefbdf;
+	 }
+	 .node-bracket{
+	     font-weight:bold;
+	     display:inline-block;
+	     cursor:pointer;
+	 }
+	 .node-bracket:hover{
+	     color:#999;
+	 }
+	 /* eof node */
+
+	 /* leaf */
+	 .leaft-container{
+	     width:100%;
+	     max-width:300px;
+	     height:100%;
+	 }
+
+	 .title{ color:#ccc;}
+	 .string{ color:#080;}
+	 .number{ color:#ccaa00;}
+	 .boolean{ color:#1979d3;}
+	 .date{ color:#aa6655;}
+	 .null{ color:#ff5050;}
+
+	 #results {
+	     width: 800px;
+	     margin-left:auto;
+	     margin-right:auto;
+	     background-color:#dedede;
+	     border:2px solid #000000;
+	     
+	 }
+	 /* eof leaf */
+
+	</style>
+    </head>
+
+    <body>
+	<center>
+	    <h1>http2.lol - Fingerprint your HTTP/2 Stack</h1>
+	    <p><em>PoC for <a href="https://www.sstic.org/2017/">sstic.org</a> by <a href="https://twitter.com/Lapeluche">@Lapeluche</a></em></p>
+
+	    <img id="trump" src="https://media.giphy.com/media/wJNGA01o1Zxp6/giphy.gif" />
+	    <p><img width="1px" id="progress" alt=" " /> <span id="percent" ></span></p>
+	</center>
+	<p id="results" >
+
+	</p>
+
+
+	<script>
+
+	 var interval_id = null;
+
+	 function check_results() {
+	     $.ajax({
+		 url: "/results",
+		 dataType: "json",
+		 success: function( result ) {
+
+		     if (result.classification === null) {
+			 // Code a executer
+			 var img = document.getElementById("progress");
+			 img.src = "{{url}}";
+			 
+			 $("#percent").text(result.progress+ "%");
+		     } else {
+			 
+			 
+			 $("#percent").html("<h2>"+result.browser.name+" ("+result.browser.percent+"%)</h2>");			 
+			 
+			 var img = document.getElementById("trump")
+			 img.src = "https://media.giphy.com/media/3o7bukPscyIznT99QY/giphy.gif"
+
+			 var node = new PrettyJSON.view.Node({
+			     el:$('#results'),
+			     data:result.classification
+			 });
+			 
+//			 $( "#results" ).html( "<strong>" + result.classification + "</strong> degrees" );
+
+			 clearInterval(interval_id);
+
+
+		     }
+		     
+		 },
+		 error: function ( ) {
+		     $( "#results" ).html( "<em>(in progress)</em>" );
+
+		     // Code a executer
+		     var img = document.getElementById("progress");
+		     img.src = "{{url}}";
+		 }
+		 
+	     });
+	 }
+	 
+	 interval_id = setInterval(function() {
+	     check_results();	     
+	 }, 1000); // executera le code après 1500 milliseconde, soit 1,5 secondes
+
+	</script>
+
+    </body>
+    
+    
+</html>
